@@ -1,6 +1,6 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser,PermissionsMixin
-import uuid
 # Create your models here.
 
 class CustomUserManager(BaseUserManager):
@@ -25,29 +25,25 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('F','Female'),
         ('O','Other'),
     )
-    gender=models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender=models.CharField(max_length=1, choices=GENDER_CHOICES)  
     is_doctor=models.BooleanField(default=False)
     is_patient=models.BooleanField(default=False)
-    is_staff=models.BooleanField(default=False)
+
+    unique_id=models.CharField(max_length=10, unique=True, editable=False)
+    medical_record=models.TextField(blank=True, null=True)
+    speciality= models.CharField(blank=True, null=True)
 
     USERNAME_FIELD='email'
-    REQUIRED_FIELDS= ['name', 'age', 'gender']
+    REQUIRED_FIELDS=['email', 'name', 'age', 'gender']
 
     objects=CustomUserManager()
-    
-    def __str__(self):
-        return self.email
-    
-class Patient(CustomUser):
-    patient_id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    medical_record=models.TextField()
 
-    def __str__(self):
-        return f"Patient: {self.name}, ID: {self.patient_id}"
+    def save(self, *args, **kwargs):
+        if not self.unique_id:
+            prefix='D-' if self.is_doctor else 'P-'
+            self.unique_id=f'{prefix}{uuid.uuid4().hex[:8].upper()}'
+        super().save(*args, **kwargs)
     
-class Doctor(CustomUser):
-    doctor_id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    speciality= models.TextField()
-
     def __str__(self):
-        return f"Doctor: {self.name}, ID: {self.doctor_id}"
+        user_type='Doctor' if self.is_doctor else 'Patient'
+        return f"{user_type} {self.email} {self.unique_id}"
