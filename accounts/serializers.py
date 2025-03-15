@@ -11,7 +11,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'unique_id': {'read_only': True}
         }
 
-    def verify_user_roles(self, attrs):
+    def validate(self, attrs):
         is_doctor=attrs.get('is_doctor')
         is_patient=attrs.get('is_patient')
 
@@ -21,7 +21,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User has no roles.")
         return attrs
 
-    def is_unique_email(self, email):
+    def validate_email(self, email):
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError("email already exists")
         return email
