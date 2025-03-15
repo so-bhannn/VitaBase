@@ -31,10 +31,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     unique_id=models.CharField(max_length=10, unique=True, editable=False)
     medical_record=models.TextField(blank=True, null=True)
-    speciality= models.CharField(blank=True, null=True)
+    speciality= models.CharField(max_length=20, blank=True, null=True)
 
     USERNAME_FIELD='email'
-    REQUIRED_FIELDS=['email', 'name', 'age', 'gender']
+    REQUIRED_FIELDS=['name', 'age', 'gender']
 
     objects=CustomUserManager()
 
