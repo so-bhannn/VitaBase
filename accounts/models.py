@@ -29,7 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_doctor=models.BooleanField(default=False)
     is_patient=models.BooleanField(default=False)
 
-    unique_id=models.CharField(max_length=10, unique=True, editable=False)
+    unique_id=models.CharField(max_length=10, unique=True, editable=False, primary_key=True)
     medical_record=models.TextField(blank=True, null=True)
     speciality= models.CharField(max_length=20, blank=True, null=True)
 
